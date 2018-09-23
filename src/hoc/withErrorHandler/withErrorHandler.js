@@ -9,15 +9,24 @@ const withErrorHandler = (WrappedComponent, axios) => {
             error: null
         }
 
-        componentDidMount() {
+        componentWillMount() {
             //Whenever we send a request we clear the old error
-            axios.interceptors.request.use(req => {
+            this.reqInterceptor = axios.interceptors.request.use(req => {
                 this.setState({error: null});
                 return req; //return it so that request continues
             });
-            axios.interceptors.response.use(res => res, error => {
+            this.resInterceptor = axios.interceptors.response.use(res => res, error => {
                 this.setState({error: error});
             });
+        }
+
+        //When we wrap the error handler around multiple components
+        //the interceptors we set still will exist, thus leaking memory
+        //or potentially could lead to error or change of state
+        //Thus when the component is not needed we remove them
+        componentWillUnmount(){
+            axios.interceptors.request.eject(this.reqInterceptor);
+            axios.interceptors.response.eject(this.resInterceptor);
         }
 
         errorModalDismissedHandler = () => {
