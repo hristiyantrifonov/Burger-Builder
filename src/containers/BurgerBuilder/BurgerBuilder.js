@@ -32,6 +32,7 @@ class BurgerBuilder extends Component{
     }
 
     componentDidMount() {
+        console.log(this.props);
         axios.get('https://myburger-221a9.firebaseio.com/ingredients.json')
             .then(response => {
                 this.setState({ingredients: response.data});
@@ -101,32 +102,20 @@ class BurgerBuilder extends Component{
     }
 
     purchaseContinueHandler = () => {
-        // alert('You continue!');
-        this.setState({loading: true});
-
-        const order = {
-            ingredients: this.state.ingredients,
-            price: this.state.totalPrice,   //!!! If this goes into real app - this price should be calculated in the server to avoid manipulation
-            customer: {
-                name: 'Hris Trifonov',
-                address: {
-                    street: 'Teststreet 1',
-                    zipCode: 'SU123VD',
-                    country: 'Germany'
-                },
-                email: 'test@test.com'
-            },
-            deliveryMethod: 'fast'
+        const queryParams = [];
+        for (let i in this.state.ingredients){
+            //the property name is the key and the value is the ingredient number (encodeURI is just good practice);
+            queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]))
         }
 
-        //Creates the orders node(table) in Firebase
-        axios.post('/orders.json', order)
-            .then(response => {
-                this.setState({loading: false, purchasing: false});
-            })
-            .catch(error => {
-                this.setState({loading: false, purchasing: false});
-            });
+        queryParams.push('price=' + this.state.totalPrice);
+
+        const queryString = queryParams.join('&');
+
+        this.props.history.push({
+            pathname: '/checkout',
+            search: '?' + queryString
+        });
     }
 
     render(){
