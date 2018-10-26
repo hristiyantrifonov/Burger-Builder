@@ -8,31 +8,23 @@ import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
-import axios from '../../axios-orders';
-import * as actionTypes from '../../store/actions';
+import * as burgerBuilderActions from '../../store/actions/index';
+import axios from "../../axios-orders";
 
 class BurgerBuilder extends Component{
     state = {
         // ingredients: null,   ---- we now use ings from Redux's mapStateToProps
         // totalPrice: 4,       ---- we now use price from Redux's mapStateToProps
         // purchasable: false,
-        purchasing: false,
-        loading: false,
-        error: false
+        purchasing: false
     }
 
     componentDidMount() {
         console.log(this.props);
-        // axios.get('https://myburger-221a9.firebaseio.com/ingredients.json')
-        //     .then(response => {
-        //         this.setState({ingredients: response.data});
-        //     })
-        //     .catch(error => {
-        //         this.setState({error: true});
-        //     });
+        this.props.onInitIngredients();
     }
 
-    // Local UI (self judged) so it is better to be managed here instead of in the reducer
+    // Local UI (self judged) so it is better to be managed here instead of in the burgerBuilder
     updatePurchaseState (ingredients) {
         const sum = Object.keys(ingredients)
             .map(igKey => {
@@ -72,7 +64,7 @@ class BurgerBuilder extends Component{
 
         //Default is the spinner
         //But if there was error display a message to indicate that it is unusable
-        let burger = this.state.error ? <p>Ingredients cannot be loaded</p> : <Spinner/>
+        let burger = this.props.error ? <p>Ingredients cannot be loaded</p> : <Spinner/>
 
         //Because we fetch the ingredients from server the UI should wait for them
         //and update accordingly
@@ -98,11 +90,6 @@ class BurgerBuilder extends Component{
                 purchaseContinued={this.purchaseContinueHandler}/>;
         }
 
-        //The check for the loading state when we checkout
-        if (this.state.loading) {
-            orderSummary = <Spinner/>;
-        }
-
         return (
             <Aux>
                 <Modal show={this.state.purchasing} modalClosed={this.purchaseCancelHandler}>
@@ -115,17 +102,19 @@ class BurgerBuilder extends Component{
 }
 
 const mapStateToProps = state => {
-    // !!! ingredients/totalPrice are the names as we named them in the reducer
+    // !!! ingredients/totalPrice are the names as we named them in the burgerBuilder
     return {
         ings: state.ingredients,
-        price: state.totalPrice
+        price: state.totalPrice,
+        err: state.error
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        onIngredientAdded: (ingName) => dispatch({type: actionTypes.ADD_INGREDIENT, ingredientToChange: ingName}),
-        onIngredientRemoved: (ingName) => dispatch({type: actionTypes.REMOVE_INGREDIENT, ingredientToChange: ingName})
+        onIngredientAdded: (ingName) => dispatch(burgerBuilderActions.addIngredient(ingName)),
+        onIngredientRemoved: (ingName) => dispatch(burgerBuilderActions.removeIngredient(ingName)),
+        onInitIngredients: () => dispatch(burgerBuilderActions.initIngredients())
     }
 }
 
