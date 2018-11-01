@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+import { config } from '../../config';
 import * as actionTypes from './actionTypes';
 
 export const authStart = () => {
@@ -32,9 +33,10 @@ export const auth = (email, password, isSignup) => {
             "returnSecureToken": true
         };
         //This depends on whether we want to login(signing in) or create new account(signing up)
-        let url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyC3Ums_EC8s8A7alC6_2oqlaGHwPiizGdU';
+        let url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=' + config.MY_FIREBASE_KEY;
+        console.log(url);
         if(!isSignup){
-            url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyC3Ums_EC8s8A7alC6_2oqlaGHwPiizGdU';
+            url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=' + config.MY_FIREBASE_KEY;
         }
         axios.post(url, authData)
             .then(response => {
