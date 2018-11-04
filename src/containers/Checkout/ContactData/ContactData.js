@@ -8,6 +8,8 @@ import axios from "../../../axios-orders";
 import Input from '../../../components/UI/Input/Input';
 import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
 import * as actions from '../../../store/actions/index';
+import { updateObject } from "../../../shared/utility";
+import { checkValidity } from "../../../shared/validationMethod";
 
 class ContactData extends Component{
     //JS object to represent our form - aka the configuration object
@@ -118,30 +120,6 @@ class ContactData extends Component{
 
     }
 
-    checkValidity(value, rules) {
-        let isValid = true;
-
-        if(!rules) {
-            return true;
-        }
-
-        // Fixing common validation gotcha
-        // Now all rules need to resolve to true not just one
-        if (rules.required) {
-            isValid = value.trim() !== '' && isValid;
-        }
-
-        if (rules.minLength) {
-            isValid = value.length >= rules.minLength && isValid;
-        }
-
-        if (rules.maxLength) {
-            isValid = value.length <= rules.maxLength && isValid;
-        }
-
-        return isValid;
-    }
-
     //Two-way binding so that when we type into the input elements the state updates
     inputChangedHandler = (event, inputIdentifier) => {
         //console.log(event.target.value, inputIdentifier);
@@ -160,13 +138,12 @@ class ContactData extends Component{
         // now we can safely change data in the value
         // if we were to change something in elementConfig - we need
         // another clone as it is still not copied.
-        const updatedFormElement = {
-            ...updatedOrderForm[inputIdentifier]
-        }
+        const updatedFormElement = updateObject(this.state.orderForm[inputIdentifier], {
+            value: event.target.value,
+            valid: checkValidity(event.target.value, this.state.orderForm[inputIdentifier].validation),
+            touched: true
+        });
 
-        updatedFormElement.value = event.target.value;
-        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation)
-        updatedFormElement.touched = true;
         updatedOrderForm[inputIdentifier] = updatedFormElement;
         console.log(updatedFormElement);
 
