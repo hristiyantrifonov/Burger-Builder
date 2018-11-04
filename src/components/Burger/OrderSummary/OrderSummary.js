@@ -7,12 +7,7 @@ class OrderSummary extends Component {
     //A modal holding the order summary
     //This could be a functional component, doesn't have to be a class
 
-    componentWillUpdate(){
-        console.log('[OrderSummary] WillUpdate')
-    }
-
     render(){
-
         //Transform into array of keys (salad, bacon etc.)
         const ingredientSummary = Object.keys(this.props.ingredients)
             .map(igKey => {

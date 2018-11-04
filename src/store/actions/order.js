@@ -30,7 +30,6 @@ export const purchaseBurger = (orderData, token) => {
         //Creates the orders table in Firebase
         axios.post('/orders.json?auth=' + token, orderData)
             .then(response => {
-                console.log(response.data);
                 dispatch(purchaseBurgerSuccess(response.data.name, orderData))
             })
             .catch(error => {

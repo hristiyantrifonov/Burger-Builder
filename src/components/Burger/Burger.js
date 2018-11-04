@@ -9,7 +9,7 @@ const burger = (props) => {
     // elements by the router - in this case BurgerBuilder & Checkout.
     // Burger is not directly link to so it does not have the props,
     // however with hoc withRouter we can inject them to any component.
-    console.log('[Burger.js]', props);
+
     //Map the object into array of ingredients
     let transformedIngredients = Object.keys(props.ingredients)
         .map(igKey => { //igKey is salad, bacon etc. // i is 1,2,3 etc.
