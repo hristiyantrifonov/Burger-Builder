@@ -11,7 +11,7 @@ import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import * as actions from '../../store/actions/index';
 import axios from "../../axios-orders";
 
-class BurgerBuilder extends Component{
+export class BurgerBuilder extends Component{
     state = {
         // ingredients: null,   ---- we now use ings from Redux's mapStateToProps
         // totalPrice: 4,       ---- we now use price from Redux's mapStateToProps
